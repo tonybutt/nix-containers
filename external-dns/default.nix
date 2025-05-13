@@ -18,7 +18,6 @@ let
     };
 
     vendorHash = "sha256-GqSrmJ5I8lDgMGYlqiWlf++PbjM3aqBNAfUesNUsSDo=";
-    # vendorHash = "sha256-GqSrmJ5I8lDgMGYlqiWlf++PbjM3aqBNAfUesNUsSDo=";
 
     ldflags = [
       "-s -w -X sigs.k8s.io/external-dns/pkg/apis/externaldns.Version=v${version}"
