@@ -8,10 +8,11 @@ let
     overrideModAttrs = {
       patches = [ ./deps-update.patch ];
       postPatch = ''
+        export GOCACHE=$TMPDIR/go-cache
         go mod tidy
-        go mod vendor
       '';
     };
+
     src = pkgs.fetchFromGitHub {
       owner = "kubernetes-sigs";
       repo = "external-dns";
@@ -52,19 +53,19 @@ nix2container.packages.${pkgs.system}.nix2container.buildImage {
   copyToRoot = [
     pkgs.cacert
   ];
-  perms = [
-    {
-      path = external-dns-bin;
-      regex = ".*";
-      uid = 65532;
-      gid = 65532;
-      uname = "nonroot";
-      gname = "nonroot";
-    }
-  ];
   layers = [
     (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
       copyToRoot = [ external-dns-bin ];
+      perms = [
+        {
+          path = external-dns-bin;
+          regex = ".*";
+          uid = 65532;
+          gid = 65532;
+          uname = "nonroot";
+          gname = "nonroot";
+        }
+      ];
       metadata = {
         created_by = "nix2container";
         author = "tonybutt";
