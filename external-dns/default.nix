@@ -5,12 +5,9 @@ let
     pname = "external-dns";
     inherit version;
 
+    patches = [ ./deps-update.patch ];
     overrideModAttrs = {
       patches = [ ./deps-update.patch ];
-      postPatch = ''
-        export GOCACHE=$TMPDIR/go-cache
-        go mod tidy
-      '';
     };
 
     src = pkgs.fetchFromGitHub {
@@ -20,7 +17,8 @@ let
       hash = "sha256-5SoqRYKS506vVI8RsuAGrlKR/6OuuZkzO5U8cAMv51I=";
     };
 
-    vendorHash = "sha256-BEHtKKbUKEuP75jt95K6X9jL8+pyVdcG1oClPL/URIQ=";
+    vendorHash = "sha256-GqSrmJ5I8lDgMGYlqiWlf++PbjM3aqBNAfUesNUsSDo=";
+    # vendorHash = "sha256-GqSrmJ5I8lDgMGYlqiWlf++PbjM3aqBNAfUesNUsSDo=";
 
     ldflags = [
       "-s -w -X sigs.k8s.io/external-dns/pkg/apis/externaldns.Version=v${version}"
@@ -32,11 +30,9 @@ let
       rm -rf $out/bin
     '';
 
-    checkPhase = null;
+    doCheck = false;
 
-    env = {
-      CGO_ENABLED = 0;
-    };
+    env.CGO_ENABLED = 0;
 
     meta = with pkgs.lib; {
       description = "ExternalDNS synchronizes exposed Kubernetes Services and Ingresses with DNS providers";
