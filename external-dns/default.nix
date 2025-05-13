@@ -1,48 +1,37 @@
 { pkgs, nix2container, ... }:
 let
-  external-dns-bin = pkgs.buildGoModule rec {
+  version = "0.16.1";
+  external-dns-bin = pkgs.buildGoModule {
     pname = "external-dns";
-    version = "0.16.1";
+    inherit version;
 
-    patches = [ ./deps-update.patch ];
-    postPatch = ''
-      export GOCACHE=$TMPDIR/go-cache
-      export GOPATH="$TMPDIR/go"
-      go mod tidy
-      go mod vendor
-    '';
-
+    overrideModAttrs = {
+      patches = [ ./deps-update.patch ];
+      postPatch = ''
+        go mod tidy
+        go mod vendor
+      '';
+    };
     src = pkgs.fetchFromGitHub {
       owner = "kubernetes-sigs";
       repo = "external-dns";
       rev = "v${version}";
       hash = "sha256-5SoqRYKS506vVI8RsuAGrlKR/6OuuZkzO5U8cAMv51I=";
     };
+
     vendorHash = "sha256-BEHtKKbUKEuP75jt95K6X9jL8+pyVdcG1oClPL/URIQ=";
 
-    configurePhase = ''
-      runHook preConfigure
-      export GOCACHE=$TMPDIR/go-cache
-      export GOPATH="$TMPDIR/go"
-      export GOPROXY=off
-      export GOSUMDB=off
-      cd "$modRoot"
-      runHook postConfigure
-    '';
     ldflags = [
       "-s -w -X sigs.k8s.io/external-dns/pkg/apis/externaldns.Version=v${version}"
     ];
-    # Because we are patching source we have to hack
-    # around the go flags to get this to build properly
-    # preBuild = ''
-    #   set -x
-    #   export GOFLAGS=-mod=mod
-    #   export GOPROXY="https://proxy.golang.org,direct"
-    # '';
+
     postInstall = ''
-      rm -rf $out/bin/flags
-      rm -rf $out/bin/metrics
+      mkdir -p $out/usr/bin
+      mv $out/bin/external-dns $out/usr/bin
+      rm -rf $out/bin
     '';
+
+    checkPhase = null;
 
     env = {
       CGO_ENABLED = 0;
@@ -58,25 +47,36 @@ let
 in
 
 nix2container.packages.${pkgs.system}.nix2container.buildImage {
-  name = "external-dns";
+  name = "registry.gamewarden.io/demo-test/external-dns";
+  tag = "v${version}";
   copyToRoot = [
-    external-dns-bin
     pkgs.cacert
   ];
   perms = [
     {
       path = external-dns-bin;
       regex = ".*";
-      uid = 1000;
-      gid = 1000;
+      uid = 65532;
+      gid = 65532;
       uname = "nonroot";
       gname = "nonroot";
     }
   ];
+  layers = [
+    (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
+      copyToRoot = [ external-dns-bin ];
+      metadata = {
+        created_by = "nix2container";
+        author = "tonybutt";
+      };
+    })
+  ];
   config = {
-    entrypoint = [ "/bin/external-dns" ];
+    user = "65532";
+    cmd = [ "--help" ];
+    entrypoint = [ "/usr/bin/external-dns" ];
     labels = {
-      testy = "mcTestterton";
+      "org.opencontainers.image.title" = "external-dns";
     };
   };
 }
