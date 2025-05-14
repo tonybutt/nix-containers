@@ -27,7 +27,6 @@ let
       mkdir -p $out/usr/bin
       mv $out/bin/external-dns $out/usr/bin
       rm -rf $out/bin
-      ${pkgs.upx}/bin/upx --brute $out/usr/bin/external-dns
     '';
 
     doCheck = false;
