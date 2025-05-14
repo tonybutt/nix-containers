@@ -27,5 +27,11 @@ nix fmt
 - build
 ```bash
 # Run without sandbox otherwise tests will fail
-nix run .#external-dns.copyToDockerDaemon --option sandbox false
+nix run .#external-dns.copyToDockerDaemon
+```
+
+## Dragonfly Operator
+- build
+```bash
+nix run .#dragonfly-operator.copyToDockerDaemon -L
 ```
