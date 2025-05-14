@@ -43,7 +43,7 @@ let
   };
 in
 nix2container.packages.${pkgs.system}.nix2container.buildImage {
-  name = "registry.gamewarden.io/demo-test/external-dns";
+  name = "external-dns";
   tag = "v${version}";
   copyToRoot = [
     pkgs.cacert
