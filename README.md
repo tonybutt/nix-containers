@@ -1,4 +1,5 @@
 # Dependencies
+
 - [Nix](https://nixos.org/nix/)
 - [Direnv](https://direnv.net/)
 
@@ -9,37 +10,48 @@ mkdir -p ~/.config/nix && grep -q "^experimental-features = nix-command flakes$"
 ```
 
 # Init Ephemeral Dev Shell
+
 _With direnv_
+
 ```bash
 direnv allow
 ```
+
 _Without direnv_
+
 ```bash
 nix develop
 ```
 
 # Format
+
 ```bash
 nix fmt
 ```
 
 ## Purpose
+
 I wanted to create a repo that is public and open source that contains the patched versions of the software I use in my Kubernetes deployments. I leverage the nix programming language to declaritively build these docker images.
 
 ## Goals
+
 - 0 CVEs
 - Small (Size really matters in the work that I do)
 - Declaritive build process with complete reproducibility
 
 ## External DNS
+
 - build
+
 ```bash
 # Run without sandbox otherwise tests will fail
 nix run .#external-dns.copyToDockerDaemon
 ```
 
 ## Dragonfly Operator
+
 - build
+
 ```bash
 nix run .#dragonfly-operator.copyToDockerDaemon -L
 ```
