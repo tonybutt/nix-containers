@@ -52,7 +52,7 @@ let
 in
 
 nix2container.packages.${pkgs.system}.nix2container.buildImage {
-  name = "registry.gamewarden.io/demo-test/source-controller";
+  name = "source-controller";
   tag = "v${version}";
   copyToRoot = [
     pkgs.cacert
