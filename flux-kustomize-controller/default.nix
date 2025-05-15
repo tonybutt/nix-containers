@@ -1,8 +1,8 @@
 { pkgs, nix2container, ... }:
 let
-  version = "1.5.0";
-  source-controller-bin = pkgs.buildGoModule {
-    pname = "source-controller";
+  version = "1.5.1";
+  kustomize-controller-bin = pkgs.buildGoModule {
+    pname = "kustomize-controller";
     inherit version;
 
     patches = 
@@ -13,28 +13,20 @@ let
 
     src = pkgs.fetchFromGitHub {
       owner = "fluxcd";
-      repo = "source-controller";
+      repo = "kustomize-controller";
       rev = "v${version}";
-      hash = "sha256-M6WWDG1TKzjf+Dgdx+Oc4zg0OlF/mJVAbW3fLZ2E8SY=";
+      hash = "sha256-gKxeEq0ysLdUrgWGQQG/ZUXyibDwwKKe54z/MOhdOII=";
     };
 
-    vendorHash = "sha256-n9jv5y6Q0TZ7NAvPTNuydytg0Isp1frY11RQct7uxSE=";
+    vendorHash = "sha256-hi14QgVm6KE77dbE6eQ3i49KDB1IgQgrL33BPY7F2/o=";
 
     excludedPackages = [
       "api/"
     ];
 
-    ldflags = [
-      "-s -w"
-    ];
-
-    tags = [
-      "netgo,osusergo,static_build"
-    ];
-
     postInstall = ''
       mkdir -p $out/usr/bin
-      mv $out/bin/source-controller $out/usr/bin
+      mv $out/bin/kustomize-controller $out/usr/bin
       rm -rf $out/bin
     '';
 
@@ -43,8 +35,8 @@ let
     env.CGO_ENABLED = 0;
 
     meta = with pkgs.lib; {
-      description = "The GitOps Toolkit source management component";
-      homepage = "https://github.com/fluxcd/source-controller";
+      description = "The GitOps Toolkit Kustomize reconciler ";
+      homepage = "https://github.com/fluxcd/kustomize-controller";
       license = licenses.asl20;
       maintainers = [ "josh" ];
     };
@@ -52,17 +44,17 @@ let
 in
 
 nix2container.packages.${pkgs.system}.nix2container.buildImage {
-  name = "source-controller";
+  name = "kustomize-controller";
   tag = "v${version}";
   copyToRoot = [
     pkgs.cacert
   ];
   layers = [
     (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
-      copyToRoot = [ source-controller-bin ];
+      copyToRoot = [ kustomize-controller-bin ];
       perms = [
         {
-          path = source-controller-bin;
+          path = kustomize-controller-bin;
           regex = ".*";
           uid = 65534;
           gid = 65534;
@@ -78,9 +70,9 @@ nix2container.packages.${pkgs.system}.nix2container.buildImage {
   ];
   config = {
     user = "65534";
-    entrypoint = [ "/usr/bin/source-controller" ];
+    entrypoint = [ "/usr/bin/kustomize-controller" ];
     labels = {
-      "org.opencontainers.image.title" = "source-controller";
+      "org.opencontainers.image.title" = "kustomize-controller";
     };
   };
 }
