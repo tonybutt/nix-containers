@@ -36,6 +36,7 @@
         dragonfly-operator = import ./dragonfly-operator { inherit pkgs nix2container; };
         flux-source-controller = import ./flux-source-controller { inherit pkgs nix2container; };
         flux-kustomize-controller = import ./flux-kustomize-controller { inherit pkgs nix2container; };
+        flux-helm-controller = import ./flux-helm-controller { inherit pkgs nix2container; };
       });
       devShell = forEachSystem (
         pkgs:
