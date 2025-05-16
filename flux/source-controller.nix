@@ -1,32 +1,39 @@
 { pkgs, nix2container, ... }:
 let
   version = "1.5.0";
-  notification-controller-bin = pkgs.buildGoModule {
-    pname = "notification-controller";
+  source-controller-bin = pkgs.buildGoModule {
+    pname = "source-controller";
     inherit version;
 
-    patches = 
-    [ ./deps-update.patch ];
+    patches = [ ./patches/source-controller-update.patch ];
     overrideModAttrs = {
-      patches = [ ./deps-update.patch ];
+      patches = [ ./patches/source-controller-update.patch ];
     };
 
     src = pkgs.fetchFromGitHub {
       owner = "fluxcd";
-      repo = "notification-controller";
+      repo = "source-controller";
       rev = "v${version}";
-      hash = "sha256-r2cAxZQ+WsS0EUbaQlAsWTn4TbNPd/5hqad7Vw/8/x0=";
+      hash = "sha256-M6WWDG1TKzjf+Dgdx+Oc4zg0OlF/mJVAbW3fLZ2E8SY=";
     };
 
-    vendorHash = "sha256-10Ys+gihRftEVkjOdhC2rmFqTzeauJWEpzA1plBW1ZA=";
+    vendorHash = "sha256-n9jv5y6Q0TZ7NAvPTNuydytg0Isp1frY11RQct7uxSE=";
 
     excludedPackages = [
       "api/"
     ];
 
+    ldflags = [
+      "-s -w"
+    ];
+
+    tags = [
+      "netgo,osusergo,static_build"
+    ];
+
     postInstall = ''
       mkdir -p $out/usr/bin
-      mv $out/bin/notification-controller $out/usr/bin
+      mv $out/bin/source-controller $out/usr/bin
       rm -rf $out/bin
     '';
 
@@ -35,8 +42,8 @@ let
     env.CGO_ENABLED = 0;
 
     meta = with pkgs.lib; {
-      description = "The GitOps Toolkit event forwarder and notification dispatcher";
-      homepage = "https://github.com/fluxcd/notification-controller";
+      description = "The GitOps Toolkit source management component";
+      homepage = "https://github.com/fluxcd/source-controller";
       license = licenses.asl20;
       maintainers = [ "josh" ];
     };
@@ -44,17 +51,17 @@ let
 in
 
 nix2container.packages.${pkgs.system}.nix2container.buildImage {
-  name = "notification-controller";
+  name = "source-controller";
   tag = "v${version}";
   copyToRoot = [
     pkgs.cacert
   ];
   layers = [
     (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
-      copyToRoot = [ notification-controller-bin ];
+      copyToRoot = [ source-controller-bin ];
       perms = [
         {
-          path = notification-controller-bin;
+          path = source-controller-bin;
           regex = ".*";
           uid = 65534;
           gid = 65534;
@@ -70,9 +77,9 @@ nix2container.packages.${pkgs.system}.nix2container.buildImage {
   ];
   config = {
     user = "65534";
-    entrypoint = [ "/usr/bin/notification-controller" ];
+    entrypoint = [ "/usr/bin/source-controller" ];
     labels = {
-      "org.opencontainers.image.title" = "notification-controller";
+      "org.opencontainers.image.title" = "source-controller";
     };
   };
 }

@@ -12,6 +12,7 @@ mkdir -p ~/.config/nix && grep -q "^experimental-features = nix-command flakes$"
 ## Init Ephemeral Dev Shell
 
 <!-- markdownlint-disable MD036 -->
+
 _With direnv_
 
 ```bash
@@ -19,6 +20,7 @@ direnv allow
 ```
 
 _Without direnv_
+
 <!-- markdownlint-enable MD036 -->
 
 ```bash
@@ -88,4 +90,13 @@ nix run .#flux-notification-controller.copyToDockerDaemon -L
 
 ```bash
 nix run .#flux-source-controller.copyToDockerDaemon -L
+```
+
+## Flux All
+
+- build
+
+```bash
+# Build all 4 Flux Controllers with one command
+nix run .#flux-all -L
 ```

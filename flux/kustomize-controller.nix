@@ -5,10 +5,9 @@ let
     pname = "kustomize-controller";
     inherit version;
 
-    patches = 
-    [ ./deps-update.patch ];
+    patches = [ ./patches/kustomize-controller-update.patch ];
     overrideModAttrs = {
-      patches = [ ./deps-update.patch ];
+      patches = [ ./patches/kustomize-controller-update.patch ];
     };
 
     src = pkgs.fetchFromGitHub {
