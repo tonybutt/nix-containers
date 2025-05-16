@@ -48,6 +48,7 @@
       devShell = forEachSystem (
         pkgs:
         pkgs.mkShell {
+          inherit (self.checks.${pkgs.system}.pre-commit-check) shellHook;
           buildInputs = with pkgs; [
             go
             gopls
