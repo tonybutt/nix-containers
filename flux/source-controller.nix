@@ -49,37 +49,38 @@ let
     };
   };
 in
-
-nix2container.packages.${pkgs.system}.nix2container.buildImage {
-  name = "source-controller";
-  tag = "v${version}";
-  copyToRoot = [
-    pkgs.cacert
-  ];
-  layers = [
-    (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
-      copyToRoot = [ source-controller-bin ];
-      perms = [
-        {
-          path = source-controller-bin;
-          regex = ".*";
-          uid = 65534;
-          gid = 65534;
-          uname = "nonroot";
-          gname = "nonroot";
-        }
-      ];
-      metadata = {
-        created_by = "nix2container";
-        author = "joshtaylor";
+{
+  source-controller = nix2container.packages.${pkgs.system}.nix2container.buildImage {
+    name = "source-controller";
+    tag = "v${version}";
+    copyToRoot = [
+      pkgs.cacert
+    ];
+    layers = [
+      (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
+        copyToRoot = [ source-controller-bin ];
+        perms = [
+          {
+            path = source-controller-bin;
+            regex = ".*";
+            uid = 65534;
+            gid = 65534;
+            uname = "nonroot";
+            gname = "nonroot";
+          }
+        ];
+        metadata = {
+          created_by = "nix2container";
+          author = "joshtaylor";
+        };
+      })
+    ];
+    config = {
+      user = "65534";
+      entrypoint = [ "/usr/bin/source-controller" ];
+      labels = {
+        "org.opencontainers.image.title" = "source-controller";
       };
-    })
-  ];
-  config = {
-    user = "65534";
-    entrypoint = [ "/usr/bin/source-controller" ];
-    labels = {
-      "org.opencontainers.image.title" = "source-controller";
     };
   };
 }

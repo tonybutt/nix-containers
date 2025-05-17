@@ -41,37 +41,38 @@ let
     };
   };
 in
-
-nix2container.packages.${pkgs.system}.nix2container.buildImage {
-  name = "helm-controller";
-  tag = "v${version}";
-  copyToRoot = [
-    pkgs.cacert
-  ];
-  layers = [
-    (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
-      copyToRoot = [ helm-controller-bin ];
-      perms = [
-        {
-          path = helm-controller-bin;
-          regex = ".*";
-          uid = 65534;
-          gid = 65534;
-          uname = "nonroot";
-          gname = "nonroot";
-        }
-      ];
-      metadata = {
-        created_by = "nix2container";
-        author = "joshtaylor";
+{
+  helm-controller = nix2container.packages.${pkgs.system}.nix2container.buildImage {
+    name = "helm-controller";
+    tag = "v${version}";
+    copyToRoot = [
+      pkgs.cacert
+    ];
+    layers = [
+      (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
+        copyToRoot = [ helm-controller-bin ];
+        perms = [
+          {
+            path = helm-controller-bin;
+            regex = ".*";
+            uid = 65534;
+            gid = 65534;
+            uname = "nonroot";
+            gname = "nonroot";
+          }
+        ];
+        metadata = {
+          created_by = "nix2container";
+          author = "joshtaylor";
+        };
+      })
+    ];
+    config = {
+      user = "65534";
+      entrypoint = [ "/usr/bin/helm-controller" ];
+      labels = {
+        "org.opencontainers.image.title" = "helm-controller";
       };
-    })
-  ];
-  config = {
-    user = "65534";
-    entrypoint = [ "/usr/bin/helm-controller" ];
-    labels = {
-      "org.opencontainers.image.title" = "helm-controller";
     };
   };
 }

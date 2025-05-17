@@ -41,37 +41,38 @@ let
     };
   };
 in
-
-nix2container.packages.${pkgs.system}.nix2container.buildImage {
-  name = "kustomize-controller";
-  tag = "v${version}";
-  copyToRoot = [
-    pkgs.cacert
-  ];
-  layers = [
-    (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
-      copyToRoot = [ kustomize-controller-bin ];
-      perms = [
-        {
-          path = kustomize-controller-bin;
-          regex = ".*";
-          uid = 65534;
-          gid = 65534;
-          uname = "nonroot";
-          gname = "nonroot";
-        }
-      ];
-      metadata = {
-        created_by = "nix2container";
-        author = "joshtaylor";
+{
+  kustomize-controller = nix2container.packages.${pkgs.system}.nix2container.buildImage {
+    name = "kustomize-controller";
+    tag = "v${version}";
+    copyToRoot = [
+      pkgs.cacert
+    ];
+    layers = [
+      (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
+        copyToRoot = [ kustomize-controller-bin ];
+        perms = [
+          {
+            path = kustomize-controller-bin;
+            regex = ".*";
+            uid = 65534;
+            gid = 65534;
+            uname = "nonroot";
+            gname = "nonroot";
+          }
+        ];
+        metadata = {
+          created_by = "nix2container";
+          author = "joshtaylor";
+        };
+      })
+    ];
+    config = {
+      user = "65534";
+      entrypoint = [ "/usr/bin/kustomize-controller" ];
+      labels = {
+        "org.opencontainers.image.title" = "kustomize-controller";
       };
-    })
-  ];
-  config = {
-    user = "65534";
-    entrypoint = [ "/usr/bin/kustomize-controller" ];
-    labels = {
-      "org.opencontainers.image.title" = "kustomize-controller";
     };
   };
 }

@@ -41,37 +41,38 @@ let
     };
   };
 in
-
-nix2container.packages.${pkgs.system}.nix2container.buildImage {
-  name = "notification-controller";
-  tag = "v${version}";
-  copyToRoot = [
-    pkgs.cacert
-  ];
-  layers = [
-    (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
-      copyToRoot = [ notification-controller-bin ];
-      perms = [
-        {
-          path = notification-controller-bin;
-          regex = ".*";
-          uid = 65534;
-          gid = 65534;
-          uname = "nonroot";
-          gname = "nonroot";
-        }
-      ];
-      metadata = {
-        created_by = "nix2container";
-        author = "joshtaylor";
+{
+  notification-controller = nix2container.packages.${pkgs.system}.nix2container.buildImage {
+    name = "notification-controller";
+    tag = "v${version}";
+    copyToRoot = [
+      pkgs.cacert
+    ];
+    layers = [
+      (nix2container.packages.${pkgs.system}.nix2container.buildLayer {
+        copyToRoot = [ notification-controller-bin ];
+        perms = [
+          {
+            path = notification-controller-bin;
+            regex = ".*";
+            uid = 65534;
+            gid = 65534;
+            uname = "nonroot";
+            gname = "nonroot";
+          }
+        ];
+        metadata = {
+          created_by = "nix2container";
+          author = "joshtaylor";
+        };
+      })
+    ];
+    config = {
+      user = "65534";
+      entrypoint = [ "/usr/bin/notification-controller" ];
+      labels = {
+        "org.opencontainers.image.title" = "notification-controller";
       };
-    })
-  ];
-  config = {
-    user = "65534";
-    entrypoint = [ "/usr/bin/notification-controller" ];
-    labels = {
-      "org.opencontainers.image.title" = "notification-controller";
     };
   };
 }

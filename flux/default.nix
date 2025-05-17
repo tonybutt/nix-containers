@@ -2,41 +2,21 @@
 
 let
 
-  helmController = import ./helm-controller.nix { inherit pkgs nix2container; };
-  kustomizeController = import ./kustomize-controller.nix { inherit pkgs nix2container; };
-  notificationController = import ./notification-controller.nix { inherit pkgs nix2container; };
-  sourceController = import ./source-controller.nix { inherit pkgs nix2container; };
-
-  buildAllControllers = pkgs.writeShellScriptBin "flux-all" ''
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    echo "--- Building and loading all Flux controllers ---"
-
-    echo "Building helm-controller..."
-    nix build .#flux-helm-controller.copyToDockerDaemon -L
-
-    echo "Building kustomize-controller..."
-    nix build .#flux-kustomize-controller.copyToDockerDaemon -L
-
-    echo "Building source-controller..."
-    nix build .#flux-source-controller.copyToDockerDaemon -L
-
-    echo "Building notification-controller..."
-    nix build .#flux-notification-controller.copyToDockerDaemon -L
-
-    echo "All controllers built successfully!"
-  '';
+  buildAllControllers = pkgs.writeShellApplication {
+    name = "flux-all";
+    text = builtins.readFile ./scripts/flux-all.sh;
+  };
 
 in
 {
 
-  controllers = {
-    helm = helmController;
-    kustomize = kustomizeController;
-    notification = notificationController;
-    source = sourceController;
-  };
+  helm-controller = (import ./helm-controller.nix { inherit pkgs nix2container; }).helm-controller;
+  kustomize-controller =
+    (import ./kustomize-controller.nix { inherit pkgs nix2container; }).kustomize-controller;
+  notification-controller =
+    (import ./notification-controller.nix { inherit pkgs nix2container; }).notification-controller;
+  source-controller =
+    (import ./source-controller.nix { inherit pkgs nix2container; }).source-controller;
 
   all = buildAllControllers;
 

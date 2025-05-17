@@ -38,10 +38,10 @@
         {
           dragonfly-operator = import ./dragonfly-operator { inherit pkgs nix2container; };
           external-dns = import ./external-dns { inherit pkgs nix2container; };
-          flux-helm-controller = flux.controllers.helm;
-          flux-kustomize-controller = flux.controllers.kustomize;
-          flux-notification-controller = flux.controllers.notification;
-          flux-source-controller = flux.controllers.source;
+          flux-helm-controller = flux.helm-controller;
+          flux-kustomize-controller = flux.kustomize-controller;
+          flux-notification-controller = flux.notification-controller;
+          flux-source-controller = flux.source-controller;
           flux-all = flux.all;
         }
       );
