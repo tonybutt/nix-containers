@@ -18,7 +18,6 @@
     let
       # lastModifiedDate = self.lastModifiedDate or self.lastModified or "19700101";
       # version = builtins.substring 0 8 lastModifiedDate;
-
       forEachSystem =
         f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
       treefmtEval = forEachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/treefmt.nix);
@@ -31,10 +30,21 @@
           inherit pre-commit-hooks treefmtEval;
         };
       });
-      packages = forEachSystem (pkgs: {
-        external-dns = import ./external-dns { inherit pkgs nix2container; };
-        dragonfly-operator = import ./dragonfly-operator { inherit pkgs nix2container; };
-      });
+      packages = forEachSystem (
+        pkgs:
+        let
+          flux = import ./flux { inherit pkgs nix2container; };
+        in
+        {
+          dragonfly-operator = import ./dragonfly-operator { inherit pkgs nix2container; };
+          external-dns = import ./external-dns { inherit pkgs nix2container; };
+          flux-helm-controller = flux.helm-controller;
+          flux-kustomize-controller = flux.kustomize-controller;
+          flux-notification-controller = flux.notification-controller;
+          flux-source-controller = flux.source-controller;
+          flux-all = flux.all;
+        }
+      );
       devShell = forEachSystem (
         pkgs:
         pkgs.mkShell {
