@@ -14,10 +14,6 @@ let
 
     vendorHash = "sha256-GqEGtoDo7BeMwReUO9hOOj03qt7yuXCEwCOY2VD81Vw=";
 
-    excludedPackages = [
-      "design/"
-    ];
-
     subPackages = [
       "cmd/crossplane"
       "cmd/crank"
