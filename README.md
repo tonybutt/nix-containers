@@ -43,13 +43,12 @@ I wanted to create a repo that is public and open source that contains the patch
 - Small (Size really matters in the work that I do)
 - Declaritive build process with complete reproducibility
 
-## External DNS
+## Crossplane
 
 - build
 
 ```bash
-# Run without sandbox otherwise tests will fail
-nix run .#external-dns.copyToDockerDaemon
+nix run .#crossplane.copyToDockerDaemon -L
 ```
 
 ## Dragonfly Operator
@@ -58,6 +57,15 @@ nix run .#external-dns.copyToDockerDaemon
 
 ```bash
 nix run .#dragonfly-operator.copyToDockerDaemon -L
+```
+
+## External DNS
+
+- build
+
+```bash
+# Run without sandbox otherwise tests will fail
+nix run .#external-dns.copyToDockerDaemon
 ```
 
 ## Flux Helm Controller

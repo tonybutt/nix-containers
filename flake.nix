@@ -36,6 +36,7 @@
           flux = import ./flux { inherit pkgs nix2container; };
         in
         {
+          crossplane = import ./crossplane { inherit pkgs nix2container; };
           dragonfly-operator = import ./dragonfly-operator { inherit pkgs nix2container; };
           external-dns = import ./external-dns { inherit pkgs nix2container; };
           flux-helm-controller = flux.helm-controller;
